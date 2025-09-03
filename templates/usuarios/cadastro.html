@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+{% block title %}Cadastro - CREA-TO{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center py-4">
+          <h3 class="mb-0">
+            <i class="bi bi-person-plus-fill me-2"></i>
+            Cadastro de Usuário
+          </h3>
+          <p class="mb-0 mt-2 opacity-75">Crie sua conta para acessar o sistema CREA-TO</p>
+        </div>
+        
+        <div class="card-body p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <!-- Informações Pessoais -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="bi bi-person-circle me-2"></i>
+                  Informações Pessoais
+                </h5>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.first_name.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.first_name.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.first_name.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.last_name.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.last_name.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.last_name.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.email.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.email.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.username.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.username.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                {% if form.username.help_text %}
+                  <div class="form-text">
+                    <small>{{ form.username.help_text }}</small>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Informações de Contato -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="bi bi-telephone-fill me-2"></i>
+                  Informações de Contato
+                </h5>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.cpf.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.cpf.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.cpf }}
+                {% if form.cpf.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.cpf.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                {% if form.cpf.help_text %}
+                  <div class="form-text">
+                    <small>{{ form.cpf.help_text }}</small>
+                  </div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.telefone.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.telefone.label }}
+                </label>
+                {{ form.telefone }}
+                {% if form.telefone.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.telefone.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                {% if form.telefone.help_text %}
+                  <div class="form-text">
+                    <small>{{ form.telefone.help_text }}</small>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Informações Profissionais -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="bi bi-briefcase-fill me-2"></i>
+                  Informações Profissionais
+                </h5>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.registro_profissional.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.registro_profissional.label }}
+                </label>
+                {{ form.registro_profissional }}
+                {% if form.registro_profissional.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.registro_profissional.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                {% if form.registro_profissional.help_text %}
+                  <div class="form-text">
+                    <small>{{ form.registro_profissional.help_text }}</small>
+                  </div>
+                {% endif %}
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.empresa.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.empresa.label }}
+                </label>
+                {{ form.empresa }}
+                {% if form.empresa.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.empresa.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+              
+              <div class="col-12 mb-3">
+                <label for="{{ form.cargo.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.cargo.label }}
+                </label>
+                {{ form.cargo }}
+                {% if form.cargo.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.cargo.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Senha -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="bi bi-shield-lock-fill me-2"></i>
+                  Segurança da Conta
+                </h5>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.password1.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.password1.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.password1.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                {% if form.password1.help_text %}
+                  <div class="form-text">
+                    <small>{{ form.password1.help_text }}</small>
+                  </div>
+                {% endif %}
+                
+                <!-- Barra de Progresso da Senha -->
+                <div class="mt-2">
+                  <div class="progress" style="height: 8px;">
+                    <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                  </div>
+                  <small class="text-muted" id="password-strength-text">Digite sua senha</small>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold">
+                  {{ form.password2.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.password2.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                {% if form.password2.help_text %}
+                  <div class="form-text">
+                    <small>{{ form.password2.help_text }}</small>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Termos e Captcha -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="bi bi-check-circle-fill me-2"></i>
+                  Termos de Uso
+                </h5>
+              </div>
+              
+              <div class="col-12 mb-3">
+                <div class="form-check">
+                  {{ form.aceito_termos }}
+                  <label class="form-check-label" for="{{ form.aceito_termos.id_for_label }}">
+                    {{ form.aceito_termos.label }}
+                  </label>
+                </div>
+                {% if form.aceito_termos.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.aceito_termos.errors %}
+                      <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+              
+              <!-- reCAPTCHA invisível -->
+              <div class="d-none">
+                {{ form.captcha }}
+              </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-person-plus-fill me-2"></i>
+                Criar Conta
+              </button>
+              <a href="{% url 'usuarios:login' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>
+                Já tenho uma conta
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.captcha-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.captcha-container > div {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+</style>
+
+<script>
+// Formatação automática do CPF
+document.getElementById('{{ form.cpf.id_for_label }}').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 11) {
+        value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        e.target.value = value;
+    }
+});
+
+// Formatação automática do telefone
+document.getElementById('{{ form.telefone.id_for_label }}').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 11) {
+        if (value.length >= 2) {
+            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (value.length >= 7) {
+            value = value.replace(/(\d{2})(\d{5})/, '($1) $2');
+        }
+        e.target.value = value;
+    }
+});
+
+// Validação de força da senha
+document.getElementById('{{ form.password1.id_for_label }}').addEventListener('input', function(e) {
+    const password = e.target.value;
+    const strengthBar = document.getElementById('password-strength-bar');
+    const strengthText = document.getElementById('password-strength-text');
+    
+    let strength = 0;
+    let text = '';
+    let color = '';
+    
+    // Critérios de força
+    if (password.length >= 8) strength += 25;
+    if (password.match(/[a-z]/)) strength += 25;
+    if (password.match(/[A-Z]/)) strength += 25;
+    if (password.match(/[0-9]/)) strength += 25;
+    
+    // Determina texto e cor
+    if (strength === 0) {
+        text = 'Digite sua senha';
+        color = 'bg-secondary';
+    } else if (strength <= 25) {
+        text = 'Muito fraca';
+        color = 'bg-danger';
+    } else if (strength <= 50) {
+        text = 'Fraca';
+        color = 'bg-warning';
+    } else if (strength <= 75) {
+        text = 'Média';
+        color = 'bg-info';
+    } else {
+        text = 'Forte';
+        color = 'bg-success';
+    }
+    
+    // Atualiza a barra
+    strengthBar.style.width = strength + '%';
+    strengthBar.className = `progress-bar ${color}`;
+    strengthText.textContent = text;
+    strengthText.className = strength <= 25 ? 'text-danger' : strength <= 50 ? 'text-warning' : strength <= 75 ? 'text-info' : 'text-success';
+});
+
+// Validação de confirmação de senha
+document.getElementById('{{ form.password2.id_for_label }}').addEventListener('input', function(e) {
+    const password1 = document.getElementById('{{ form.password1.id_for_label }}').value;
+    const password2 = e.target.value;
+    
+    if (password2 && password1 !== password2) {
+        e.target.setCustomValidity('As senhas não coincidem');
+    } else {
+        e.target.setCustomValidity('');
+    }
+});
+</script>
+{% endblock %}

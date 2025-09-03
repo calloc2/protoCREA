@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Protocolo {{ protocolo.numero }} - CREA-TO{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'protocolos:lista' %}">Protocolos</a></li>
+                <li class="breadcrumb-item active">{{ protocolo.numero }}</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-0">Protocolo {{ protocolo.numero }}</h1>
+        <p class="text-muted">Detalhes do protocolo</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'protocolos:lista' %}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+        {% if user_can_edit or protocolo.criado_por == user %}
+        <a href="{% url 'protocolos:editar' protocolo.pk %}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Informações Principais -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-text"></i> Informações do Protocolo
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Número:</dt>
+                            <dd class="col-sm-8">
+                                <strong class="text-primary">{{ protocolo.numero }}</strong>
+                            </dd>
+                            
+                            <dt class="col-sm-4">Tipo:</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge {% if protocolo.tipo == 'profissional' %}bg-info{% else %}bg-success{% endif %} fs-6">
+                                    {{ protocolo.get_tipo_display }}
+                                </span>
+                            </dd>
+                            
+                            <dt class="col-sm-4">CPF/CNPJ:</dt>
+                            <dd class="col-sm-8">
+                                <code class="fs-6">{{ protocolo.cpf_cnpj_formatado }}</code>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Data Emissão:</dt>
+                            <dd class="col-sm-8">{{ protocolo.data_emissao|date:"d/m/Y" }}</dd>
+                            
+                            <dt class="col-sm-4">Protocolo SITAC:</dt>
+                            <dd class="col-sm-8">
+                                {% if protocolo.protocolo_sitac %}
+                                <span class="badge bg-success">{{ protocolo.protocolo_sitac }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">N/A</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Local:</dt>
+                            <dd class="col-sm-8">
+                                <strong>{{ protocolo.local_armazenamento }}</strong>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                {% if protocolo.observacoes %}
+                <hr>
+                <div class="row">
+                    <div class="col-12">
+                        <dt class="fw-bold">Observações:</dt>
+                        <dd class="mt-2">{{ protocolo.observacoes|linebreaks }}</dd>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Histórico -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i> Histórico
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Criado em:</dt>
+                            <dd class="col-sm-8">{{ protocolo.criado_em|date:"d/m/Y H:i" }}</dd>
+                            
+                            <dt class="col-sm-4">Atualizado em:</dt>
+                            <dd class="col-sm-8">{{ protocolo.atualizado_em|date:"d/m/Y H:i" }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Criado por:</dt>
+                            <dd class="col-sm-8">
+                                {% if protocolo.criado_por %}
+                                {{ protocolo.criado_por.get_full_name|default:protocolo.criado_por.username }}
+                                {% else %}
+                                <span class="text-muted">Sistema</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Ações Rápidas -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Ações Rápidas</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'protocolos:lista' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-list"></i> Listar Todos
+                    </a>
+                    {% if user_can_publish %}
+                    <a href="{% url 'protocolos:criar' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Novo Protocolo
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Informações do Sistema -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Informações do Sistema</h6>
+            </div>
+            <div class="card-body">
+                <small class="text-muted">
+                    <div class="mb-2">
+                        <strong>ID:</strong> {{ protocolo.pk }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Última atualização:</strong><br>
+                        {{ protocolo.atualizado_em|timesince }} atrás
+                    </div>
+                    <div>
+                        <strong>Criado:</strong><br>
+                        {{ protocolo.criado_em|timesince }} atrás
+                    </div>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

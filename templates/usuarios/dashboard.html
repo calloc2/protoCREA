@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - CREA-TO{% endblock %}
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <h2 class="mb-3">Dashboard</h2>
+    <p class="text-muted">Bem-vindo, {{ user.get_full_name }}!</p>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card bg-primary text-white">
+      <div class="card-body text-center">
+        <h3 class="card-title">{{ total_protocolos }}</h3>
+        <p class="card-text">Total de Protocolos</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card bg-success text-white">
+      <div class="card-body text-center">
+        <h3 class="card-title">{{ protocolos_ativos }}</h3>
+        <p class="card-text">Protocolos Ativos</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card bg-info text-white">
+      <div class="card-body text-center">
+        <h3 class="card-title">{{ protocolos_arquivados }}</h3>
+        <p class="card-text">Protocolos Arquivados</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card bg-warning text-dark">
+      <div class="card-body text-center">
+        <h3 class="card-title">{{ perfil.get_permissao_display|default:"N/A" }}</h3>
+        <p class="card-text">Nível de Permissão</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Protocolos Recentes</h5>
+      </div>
+      <div class="card-body">
+        {% if protocolos_recentes %}
+          <div class="list-group list-group-flush">
+            {% for protocolo in protocolos_recentes %}
+              <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">
+                    <a href="{% url 'protocolos:detalhe' protocolo.pk %}" class="text-decoration-none">
+                      {{ protocolo.numero_protocolo }}
+                    </a>
+                  </h6>
+                  <small class="text-muted">{{ protocolo.criado_em|date:"d/m/Y" }}</small>
+                </div>
+                <p class="mb-1">{{ protocolo.assunto|truncatechars:150 }}</p>
+                <div class="d-flex gap-2">
+                  <span class="badge bg-secondary">{{ protocolo.unidade_crea }}</span>
+                  <span class="badge {% if protocolo.protocolo_sitac == 'ativo' %}bg-success{% else %}bg-warning{% endif %}">
+                    {{ protocolo.get_protocolo_sitac_display }}
+                  </span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="mt-3">
+            <a href="{% url 'protocolos:lista' %}" class="btn btn-outline-primary">Ver Todos os Protocolos</a>
+          </div>
+        {% else %}
+          <p class="text-muted text-center">Nenhum protocolo encontrado.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    {% if perfil and perfil.can_publish %}
+    <div class="card shadow mb-4">
+      <div class="card-header bg-success text-white">
+        <h6 class="mb-0">Meus Protocolos</h6>
+      </div>
+      <div class="card-body">
+        <p class="text-muted text-center">Você pode criar e gerenciar protocolos.</p>
+        <div class="mt-3">
+          <a href="{% url 'protocolos:criar' %}" class="btn btn-success btn-sm w-100">Novo Protocolo</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    <div class="card shadow">
+      <div class="card-header bg-info text-white">
+        <h6 class="mb-0">Ações Rápidas</h6>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a href="{% url 'usuarios:perfil' %}" class="btn btn-outline-primary">Meu Perfil</a>
+          <a href="{% url 'usuarios:editar_perfil' %}" class="btn btn-outline-secondary">Editar Perfil</a>
+          {% if perfil and perfil.can_publish %}
+            <a href="{% url 'protocolos:criar' %}" class="btn btn-outline-success">Criar Protocolo</a>
+          {% endif %}
+          <a href="{% url 'protocolos:lista' %}" class="btn btn-outline-info">Pesquisar Protocolos</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

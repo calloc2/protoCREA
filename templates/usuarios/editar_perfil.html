@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Editar Perfil - Usuários{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Editar Perfil</h4>
+      </div>
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.cpf.id_for_label }}" class="form-label">{{ form.cpf.label }}</label>
+              {{ form.cpf }}
+              {% if form.cpf.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.cpf.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.telefone.id_for_label }}" class="form-label">{{ form.telefone.label }}</label>
+              {{ form.telefone }}
+              {% if form.telefone.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.telefone.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+              {% if form.telefone.help_text %}
+                <div class="form-text">{{ form.telefone.help_text }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.tipo_usuario.id_for_label }}" class="form-label">{{ form.tipo_usuario.label }}</label>
+              {{ form.tipo_usuario }}
+              {% if form.tipo_usuario.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.tipo_usuario.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.registro_profissional.id_for_label }}" class="form-label">{{ form.registro_profissional.label }}</label>
+              {{ form.registro_profissional }}
+              {% if form.registro_profissional.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.registro_profissional.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+              {% if form.registro_profissional.help_text %}
+                <div class="form-text">{{ form.registro_profissional.help_text }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.empresa.id_for_label }}" class="form-label">{{ form.empresa.label }}</label>
+              {{ form.empresa }}
+              {% if form.empresa.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.empresa.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.cargo.id_for_label }}" class="form-label">{{ form.cargo.label }}</label>
+              {{ form.cargo }}
+              {% if form.cargo.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.cargo.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{% url 'usuarios:perfil' %}" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Formatação automática do CPF
+document.getElementById('{{ form.cpf.id_for_label }}').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 11) {
+        value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        e.target.value = value;
+    }
+});
+
+// Formatação automática do telefone
+document.getElementById('{{ form.telefone.id_for_label }}').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 11) {
+        if (value.length >= 2) {
+            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (value.length >= 7) {
+            value = value.replace(/(\d{2})(\d{5})/, '($1) $2');
+        }
+        e.target.value = value;
+    }
+});
+</script>
+{% endblock %}

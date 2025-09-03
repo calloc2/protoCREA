@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - CREA-TO{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'protocolos:lista' %}">Protocolos</a></li>
+                <li class="breadcrumb-item active">{{ action|title }}</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-0">{{ title }}</h1>
+        <p class="text-muted">
+            {% if action == 'criar' %}
+            Preencha os dados para criar um novo protocolo
+            {% else %}
+            Edite as informações do protocolo
+            {% endif %}
+        </p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'protocolos:lista' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-text"></i> Dados do Protocolo
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.numero.id_for_label }}" class="form-label">
+                                    {{ form.numero.label }}
+                                </label>
+                                {{ form.numero }}
+                                {% if form.numero.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.numero.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.numero.help_text %}
+                                <div class="form-text">{{ form.numero.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.cpf_cnpj.id_for_label }}" class="form-label">
+                                    {{ form.cpf_cnpj.label }}
+                                </label>
+                                {{ form.cpf_cnpj }}
+                                {% if form.cpf_cnpj.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.cpf_cnpj.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.cpf_cnpj.help_text %}
+                                <div class="form-text">{{ form.cpf_cnpj.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.unidade_crea.id_for_label }}" class="form-label">
+                                    {{ form.unidade_crea.label }}
+                                </label>
+                                {{ form.unidade_crea }}
+                                {% if form.unidade_crea.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.unidade_crea.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.unidade_crea.help_text %}
+                                <div class="form-text">{{ form.unidade_crea.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Local de Armazenamento -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-geo-alt"></i> Local de Armazenamento
+                            </h6>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.armario.id_for_label }}" class="form-label">
+                                    {{ form.armario.label }}
+                                </label>
+                                {{ form.armario }}
+                                {% if form.armario.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.armario.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.armario.help_text %}
+                                <div class="form-text">{{ form.armario.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.prateleira.id_for_label }}" class="form-label">
+                                    {{ form.prateleira.label }}
+                                </label>
+                                {{ form.prateleira }}
+                                {% if form.prateleira.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.prateleira.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.prateleira.help_text %}
+                                <div class="form-text">{{ form.prateleira.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.caixa.id_for_label }}" class="form-label">
+                                    {{ form.caixa.label }}
+                                </label>
+                                {{ form.caixa }}
+                                {% if form.caixa.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.caixa.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.caixa.help_text %}
+                                <div class="form-text">{{ form.caixa.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="{{ form.observacoes.id_for_label }}" class="form-label">
+                                    {{ form.observacoes.label }}
+                                </label>
+                                {{ form.observacoes }}
+                                {% if form.observacoes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.observacoes.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.observacoes.help_text %}
+                                <div class="form-text">{{ form.observacoes.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'protocolos:lista' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            {% if action == 'criar' %}
+                            Criar Protocolo
+                            {% else %}
+                            Salvar Alterações
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Informações Adicionais -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Informações Importantes
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>A data de emissão será automaticamente definida para hoje</li>
+                    <li>O tipo (Profissional/Empresa) será determinado automaticamente pelo número de dígitos do CPF/CNPJ</li>
+                    <li>CPF deve ter 11 dígitos e CNPJ deve ter 14 dígitos</li>
+                    <li>O número do protocolo deve ser único no sistema</li>
+                    <li>O campo Protocolo SITAC será preenchido automaticamente pela API do SITAC</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Máscara para CPF/CNPJ
+document.addEventListener('DOMContentLoaded', function() {
+    const cpfCnpjInput = document.getElementById('{{ form.cpf_cnpj.id_for_label }}');
+    
+    cpfCnpjInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length <= 11) {
+            // Formata como CPF
+            value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        } else if (value.length <= 14) {
+            // Formata como CNPJ
+            value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+        }
+        
+        e.target.value = value;
+    });
+    
+    // Validação em tempo real
+    cpfCnpjInput.addEventListener('blur', function(e) {
+        const value = e.target.value.replace(/\D/g, '');
+        const feedback = this.parentNode.querySelector('.invalid-feedback');
+        
+        if (value.length !== 11 && value.length !== 14) {
+            if (!feedback) {
+                const div = document.createElement('div');
+                div.className = 'invalid-feedback d-block';
+                div.textContent = 'CPF deve ter 11 dígitos ou CNPJ deve ter 14 dígitos';
+                this.parentNode.appendChild(div);
+            }
+        } else if (feedback) {
+            feedback.remove();
+        }
+    });
+});
+</script>
+{% endblock %}
