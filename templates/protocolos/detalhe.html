@@ -20,9 +20,16 @@
             <i class="bi bi-arrow-left"></i> Voltar
         </a>
         {% if user_can_edit or protocolo.criado_por == user %}
-        <a href="{% url 'protocolos:editar' protocolo.pk %}" class="btn btn-warning">
+        <a href="{% url 'protocolos:editar' protocolo.pk %}" class="btn btn-warning me-2">
             <i class="bi bi-pencil"></i> Editar
         </a>
+        <button type="button" class="btn btn-danger" 
+                data-bs-toggle="modal" 
+                data-bs-target="#deleteModal" 
+                data-protocolo-id="{{ protocolo.pk }}"
+                data-protocolo-numero="{{ protocolo.numero }}">
+            <i class="bi bi-trash"></i> Excluir
+        </button>
         {% endif %}
     </div>
 </div>
@@ -72,9 +79,16 @@
                                 {% endif %}
                             </dd>
                             
-                            <dt class="col-sm-4">Local:</dt>
+                            <dt class="col-sm-4">Local Físico:</dt>
                             <dd class="col-sm-8">
-                                <strong>{{ protocolo.local_armazenamento }}</strong>
+                                {% if protocolo.armario and protocolo.prateleira and protocolo.caixa %}
+                                    <strong>{{ protocolo.get_unidade_crea_display }}</strong><br>
+                                    <small class="text-muted">
+                                        Armário {{ protocolo.armario }} - Prateleira {{ protocolo.prateleira }} - Caixa {{ protocolo.caixa }}
+                                    </small>
+                                {% else %}
+                                    <span class="text-muted">Local não definido</span>
+                                {% endif %}
                             </dd>
                         </dl>
                     </div>
@@ -155,9 +169,6 @@
             <div class="card-body">
                 <small class="text-muted">
                     <div class="mb-2">
-                        <strong>ID:</strong> {{ protocolo.pk }}
-                    </div>
-                    <div class="mb-2">
                         <strong>Última atualização:</strong><br>
                         {{ protocolo.atualizado_em|timesince }} atrás
                     </div>
@@ -170,4 +181,42 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de Confirmação para Deletar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o protocolo <strong id="protocolo-numero"></strong>?</p>
+                <p class="text-danger"><strong>Esta ação não pode ser desfeita!</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="delete-form" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Excluir Protocolo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Configurar modal de exclusão
+document.getElementById('deleteModal').addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const protocoloId = button.getAttribute('data-protocolo-id');
+    const protocoloNumero = button.getAttribute('data-protocolo-numero');
+    
+    const modal = this;
+    modal.querySelector('#protocolo-numero').textContent = protocoloNumero;
+    modal.querySelector('#delete-form').action = `/protocolos/${protocoloId}/deletar/`;
+});
+</script>
 {% endblock %}

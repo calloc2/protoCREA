@@ -24,6 +24,7 @@ def cadastro(request):
                 registro_profissional=form.cleaned_data['registro_profissional'],
                 empresa=form.cleaned_data['empresa'],
                 cargo=form.cleaned_data['cargo'],
+                local=form.cleaned_data['local'],
             )
             messages.success(request, 'Cadastro realizado com sucesso! Sua conta será analisada por um administrador.')
             return redirect('usuarios:login')

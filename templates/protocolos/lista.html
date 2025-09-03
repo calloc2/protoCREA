@@ -100,10 +100,7 @@
                         <th>Tipo</th>
                         <th>CPF/CNPJ</th>
                         <th>Unidade CREA-TO</th>
-                        <th>Armário</th>
-                        <th>Prateleira</th>
-                        <th>Caixa</th>
-                        <th>ID Local</th>
+                        <th>Local Físico</th>
                         <th>Data Emissão</th>
                         <th>Protocolo SITAC</th>
                         <th>Ações</th>
@@ -125,28 +122,13 @@
                             <span class="badge bg-primary">{{ protocolo.get_unidade_crea_display }}</span>
                         </td>
                         <td>
-                            {% if protocolo.armario %}
-                                <span class="badge bg-info">{{ protocolo.armario }}</span>
+                            {% if protocolo.armario and protocolo.prateleira and protocolo.caixa %}
+                                <small class="text-muted">
+                                    A{{ protocolo.armario }} - P{{ protocolo.prateleira }} - C{{ protocolo.caixa }}
+                                </small>
                             {% else %}
                                 <span class="text-muted">-</span>
                             {% endif %}
-                        </td>
-                        <td>
-                            {% if protocolo.prateleira %}
-                                <span class="badge bg-warning text-dark">{{ protocolo.prateleira }}</span>
-                            {% else %}
-                                <span class="text-muted">-</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if protocolo.caixa %}
-                                <span class="badge bg-success">{{ protocolo.caixa }}</span>
-                            {% else %}
-                                <span class="text-muted">-</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <small class="text-muted font-monospace">{{ protocolo.identificador_local }}</small>
                         </td>
                         <td>{{ protocolo.data_emissao|date:"d/m/Y" }}</td>
                         <td>
@@ -157,14 +139,23 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'protocolos:detalhe' protocolo.pk %}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i> Ver
-                            </a>
-                            {% if user_can_edit or protocolo.criado_por == user %}
-                            <a href="{% url 'protocolos:editar' protocolo.pk %}" class="btn btn-sm btn-outline-warning">
-                                <i class="bi bi-pencil"></i> Editar
-                            </a>
-                            {% endif %}
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'protocolos:detalhe' protocolo.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {% if user_can_edit or protocolo.criado_por == user %}
+                                <a href="{% url 'protocolos:editar' protocolo.pk %}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteModal" 
+                                        data-protocolo-id="{{ protocolo.pk }}"
+                                        data-protocolo-numero="{{ protocolo.numero }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -239,6 +230,29 @@
     </div>
 </div>
 {% endif %}
+
+<!-- Modal de Confirmação para Deletar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o protocolo <strong id="protocolo-numero"></strong>?</p>
+                <p class="text-danger"><strong>Esta ação não pode ser desfeita!</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="delete-form" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Excluir Protocolo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -248,6 +262,17 @@ document.getElementById('itens_por_pagina').addEventListener('change', function(
     url.searchParams.set('itens_por_pagina', this.value);
     url.searchParams.set('page', '1'); // Volta para primeira página
     window.location.href = url.toString();
+});
+
+// Configurar modal de exclusão
+document.getElementById('deleteModal').addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const protocoloId = button.getAttribute('data-protocolo-id');
+    const protocoloNumero = button.getAttribute('data-protocolo-numero');
+    
+    const modal = this;
+    modal.querySelector('#protocolo-numero').textContent = protocoloNumero;
+    modal.querySelector('#delete-form').action = `/protocolos/${protocoloId}/deletar/`;
 });
 </script>
 {% endblock %}

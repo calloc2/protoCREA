@@ -87,6 +87,7 @@
               {% if perfil.registro_profissional %}
                 <p><strong>Registro Profissional:</strong> {{ perfil.registro_profissional }}</p>
               {% endif %}
+              <p><strong>Local de Trabalho:</strong> {{ perfil.get_local_display }}</p>
             </div>
             <div class="col-md-6">
               {% if perfil.empresa %}

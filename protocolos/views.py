@@ -161,3 +161,27 @@ def protocolo_edit(request, pk):
         'title': 'Editar Protocolo'
     }
     return render(request, 'protocolos/form.html', context)
+
+@login_required
+def protocolo_delete(request, pk):
+    """View para deletar protocolo"""
+    protocolo = get_object_or_404(Protocolo, pk=pk)
+    
+    if not hasattr(request.user, 'perfil'):
+        messages.error(request, 'Perfil não encontrado.')
+        return redirect('protocolos:lista')
+    
+    perfil = request.user.perfil
+    
+    if not (perfil.can_edit or protocolo.criado_por == request.user):
+        messages.error(request, 'Você não tem permissão para excluir este protocolo.')
+        return redirect('protocolos:detalhe', pk=protocolo.pk)
+    
+    if request.method == 'POST':
+        numero_protocolo = protocolo.numero
+        protocolo.delete()
+        messages.success(request, f'Protocolo {numero_protocolo} excluído com sucesso!')
+        return redirect('protocolos:lista')
+    
+    # Se não for POST, redireciona para a lista
+    return redirect('protocolos:lista')
