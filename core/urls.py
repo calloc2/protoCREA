@@ -21,9 +21,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("",include("protocolos.urls")),
-    path("usuarios/",include("usuarios.urls")),
     path("protocolos/",include("protocolos.urls")),
+    path("usuarios/",include("usuarios.urls")),
+    path("",include("protocolos.urls")),  # Para manter compatibilidade com URLs existentes
 ]
 
 if settings.DEBUG:

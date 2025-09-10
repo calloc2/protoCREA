@@ -52,10 +52,79 @@ class LocalArmazenamento(models.Model):
     def __str__(self):
         return f"{self.get_local_armazenamento_display()} - Armário {self.armario} - Prateleira {self.prateleira} - Caixa {self.caixa}"
 
+class TipoDocumento(models.Model):
+    """Modelo para definir os tipos de documentos por categoria de processo"""
+    CATEGORIA_CHOICES = [
+        ('finalistico_pf', 'Processo Finalístico - Pessoa Física'),
+        ('finalistico_pj', 'Processo Finalístico - Pessoa Jurídica'),
+        ('administrativo', 'Processo Administrativo'),
+    ]
+    
+    categoria = models.CharField(
+        "Categoria do Processo",
+        max_length=20,
+        choices=CATEGORIA_CHOICES,
+        help_text="Categoria do processo ao qual este tipo de documento pertence"
+    )
+    
+    nome = models.CharField(
+        "Nome do Documento",
+        max_length=100,
+        help_text="Nome do tipo de documento"
+    )
+    
+    ativo = models.BooleanField(
+        "Ativo",
+        default=True,
+        help_text="Se este tipo de documento está ativo"
+    )
+    
+    class Meta:
+        verbose_name = "Tipo de Documento"
+        verbose_name_plural = "Tipos de Documentos"
+        ordering = ['categoria', 'nome']
+        unique_together = ['categoria', 'nome']
+    
+    def __str__(self):
+        return f"{self.get_categoria_display()} - {self.nome}"
+
+class Documento(models.Model):
+    """Modelo para armazenar documentos associados a um protocolo"""
+    protocolo = models.ForeignKey(
+        'Protocolo',
+        on_delete=models.CASCADE,
+        related_name='documentos',
+        verbose_name="Protocolo"
+    )
+    
+    tipo_documento = models.ForeignKey(
+        TipoDocumento,
+        on_delete=models.CASCADE,
+        verbose_name="Tipo de Documento"
+    )
+    
+    observacoes = models.TextField(
+        "Observações",
+        blank=True,
+        help_text="Observações sobre este documento"
+    )
+    
+    criado_em = models.DateTimeField("Criado em", auto_now_add=True)
+    atualizado_em = models.DateTimeField("Atualizado em", auto_now=True)
+    
+    class Meta:
+        verbose_name = "Documento"
+        verbose_name_plural = "Documentos"
+        ordering = ['-criado_em']
+    
+    def __str__(self):
+        return f"{self.protocolo.numero} - {self.tipo_documento.nome}"
+
 class Protocolo(models.Model):
     TIPO_CHOICES = [
-        ('profissional', 'Profissional'),
-        ('empresa', 'Empresa'),
+        ('finalistico_pf', 'Processo Finalístico - Pessoa Física'),
+        ('finalistico_pj', 'Processo Finalístico - Pessoa Jurídica'),
+        ('administrativo', 'Processo Administrativo'),
     ]
     
     UNIDADE_CHOICES = [
@@ -85,20 +154,22 @@ class Protocolo(models.Model):
     cpf_cnpj = models.CharField(
         "CPF/CNPJ", 
         max_length=18,
+        blank=True,
+        null=True,
         validators=[
             RegexValidator(
                 regex=r'^\d{11}|\d{14}$',
                 message='CPF deve ter 11 dígitos ou CNPJ deve ter 14 dígitos'
             )
         ],
-        help_text="CPF (11 dígitos) ou CNPJ (14 dígitos)"
+        help_text="CPF (11 dígitos) ou CNPJ (14 dígitos) - obrigatório para processos finalísticos"
     )
     
     tipo = models.CharField(
-        "Tipo", 
-        max_length=15, 
+        "Tipo de Processo", 
+        max_length=20, 
         choices=TIPO_CHOICES,
-        help_text="Tipo de pessoa física ou jurídica"
+        help_text="Tipo de processo a ser protocolado"
     )
     
 
@@ -184,20 +255,29 @@ class Protocolo(models.Model):
 
     def clean(self):
         """Validação personalizada para CPF/CNPJ e campos de armazenamento"""
-        if self.cpf_cnpj:
+        # Validação de CPF/CNPJ baseada no tipo de processo
+        if self.tipo in ['finalistico_pf', 'finalistico_pj']:
+            if not self.cpf_cnpj:
+                raise ValidationError({
+                    'cpf_cnpj': 'CPF/CNPJ é obrigatório para processos finalísticos'
+                })
+            
             cpf_cnpj_limpo = re.sub(r'[^\d]', '', self.cpf_cnpj)
             
-            if len(cpf_cnpj_limpo) == 11:
-                if self.tipo != 'profissional':
-                    self.tipo = 'profissional'
-            elif len(cpf_cnpj_limpo) == 14:
-                if self.tipo != 'empresa':
-                    self.tipo = 'empresa'
-            else:
+            if self.tipo == 'finalistico_pf' and len(cpf_cnpj_limpo) != 11:
                 raise ValidationError({
-                    'cpf_cnpj': 'CPF deve ter 11 dígitos ou CNPJ deve ter 14 dígitos'
+                    'cpf_cnpj': 'CPF deve ter 11 dígitos para processos finalísticos de pessoa física'
                 })
+            elif self.tipo == 'finalistico_pj' and len(cpf_cnpj_limpo) != 14:
+                raise ValidationError({
+                    'cpf_cnpj': 'CNPJ deve ter 14 dígitos para processos finalísticos de pessoa jurídica'
+                })
+        elif self.tipo == 'administrativo' and self.cpf_cnpj:
+            raise ValidationError({
+                'cpf_cnpj': 'CPF/CNPJ não deve ser informado para processos administrativos'
+            })
         
+        # Validação dos campos de armazenamento
         if self.armario and not self.armario.isdigit():
             raise ValidationError({
                 'armario': 'O armário deve conter apenas números.'
@@ -221,6 +301,9 @@ class Protocolo(models.Model):
     @property
     def cpf_cnpj_formatado(self):
         """Retorna o CPF/CNPJ formatado"""
+        if not self.cpf_cnpj:
+            return "Não informado"
+        
         cpf_cnpj_limpo = re.sub(r'[^\d]', '', self.cpf_cnpj)
         if len(cpf_cnpj_limpo) == 11:
             return f"{cpf_cnpj_limpo[:3]}.{cpf_cnpj_limpo[3:6]}.{cpf_cnpj_limpo[6:9]}-{cpf_cnpj_limpo[9:]}"

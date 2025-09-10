@@ -4,7 +4,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.dateparse import parse_date
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Protocolo, LocalArmazenamento
+from django.http import JsonResponse
+from .models import Protocolo, LocalArmazenamento, TipoDocumento, Documento
 from .forms import ProtocoloForm
 
 def protocolo_list(request):
@@ -118,7 +119,40 @@ def protocolo_create(request):
             protocolo = form.save(commit=False)
             protocolo.criado_por = request.user
             protocolo.save()
-            messages.success(request, 'Protocolo criado com sucesso!')
+            
+            # Processar documentos enviados via JavaScript
+            documentos_data = {}
+            for key, value in request.POST.items():
+                if key.startswith('documentos[') and ']' in key:
+                    # Extrair índice e campo do formato: documentos[0][tipo_documento]
+                    parts = key.split('[')
+                    if len(parts) >= 3:
+                        index = parts[1].rstrip(']')
+                        field = parts[2].rstrip(']')
+                        
+                        if index not in documentos_data:
+                            documentos_data[index] = {}
+                        documentos_data[index][field] = value
+            
+            # Criar documentos
+            documentos_criados = 0
+            for doc_data in documentos_data.values():
+                if doc_data.get('tipo_documento'):
+                    try:
+                        tipo_doc = TipoDocumento.objects.get(id=doc_data['tipo_documento'])
+                        Documento.objects.create(
+                            protocolo=protocolo,
+                            tipo_documento=tipo_doc,
+                            observacoes=doc_data.get('observacoes', '')
+                        )
+                        documentos_criados += 1
+                    except TipoDocumento.DoesNotExist:
+                        pass
+            
+            if documentos_criados > 0:
+                messages.success(request, f'Protocolo criado com sucesso! {documentos_criados} documento(s) adicionado(s).')
+            else:
+                messages.success(request, 'Protocolo criado com sucesso!')
             return redirect('protocolos:detalhe', pk=protocolo.pk)
     else:
         form = ProtocoloForm(user=request.user)
@@ -185,3 +219,25 @@ def protocolo_delete(request, pk):
     
     # Se não for POST, redireciona para a lista
     return redirect('protocolos:lista')
+
+def tipos_documento_api(request):
+    """API para buscar tipos de documento por categoria"""
+    categoria = request.GET.get('categoria', '')
+    
+    if not categoria:
+        return JsonResponse({'tipos': []})
+    
+    tipos = TipoDocumento.objects.filter(
+        categoria=categoria,
+        ativo=True
+    ).order_by('nome')
+    
+    tipos_data = [
+        {
+            'id': tipo.id,
+            'nome': tipo.nome
+        }
+        for tipo in tipos
+    ]
+    
+    return JsonResponse({'tipos': tipos_data})

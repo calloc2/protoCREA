@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'creato_db'),
-        'USER': os.getenv('DB_USER', 'creato_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'creato_password'),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'NAME': 'creato_db',
+        'USER': 'creato_user',
+        'PASSWORD': 'manutencao5674',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -157,3 +157,9 @@ SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 LOGIN_REDIRECT_URL = '/usuarios/dashboard/'
 LOGIN_URL = '/usuarios/login/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Content Security Policy for reCAPTCHA
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "https://www.google.com", "https://www.gstatic.com")
+CSP_FRAME_SRC = ("'self'", "https://www.google.com")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://www.google.com")

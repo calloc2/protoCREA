@@ -47,7 +47,8 @@ class UsuarioRegistrationForm(UserCreationForm):
         label='Nome',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Seu nome completo'
+            'placeholder': 'Seu nome completo',
+            'autocomplete': 'given-name'
         })
     )
     
@@ -57,7 +58,8 @@ class UsuarioRegistrationForm(UserCreationForm):
         label='Sobrenome',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Seu sobrenome'
+            'placeholder': 'Seu sobrenome',
+            'autocomplete': 'family-name'
         })
     )
     
@@ -65,7 +67,8 @@ class UsuarioRegistrationForm(UserCreationForm):
         required=True,
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'seu.email@exemplo.com'
+            'placeholder': 'seu.email@exemplo.com',
+            'autocomplete': 'email'
         })
     )
     
@@ -73,7 +76,8 @@ class UsuarioRegistrationForm(UserCreationForm):
         max_length=150,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Nome de usuário único'
+            'placeholder': 'Nome de usuário único',
+            'autocomplete': 'username'
         })
     )
     
@@ -82,7 +86,8 @@ class UsuarioRegistrationForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': 'Digite sua senha',
-            'id': 'password1'
+            'id': 'password1',
+            'autocomplete': 'new-password'
         })
     )
     
@@ -91,7 +96,8 @@ class UsuarioRegistrationForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': 'Confirme sua senha',
-            'id': 'password2'
+            'id': 'password2',
+            'autocomplete': 'new-password'
         })
     )
     
@@ -152,10 +158,10 @@ class UsuarioRegistrationForm(UserCreationForm):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
     
-    captcha = ReCaptchaField(
-        widget=ReCaptchaV3,
-        label=''
-    )
+    # captcha = ReCaptchaField(
+    #     widget=ReCaptchaV3,
+    #     label=''
+    # )
 
     class Meta:
         model = User
@@ -242,7 +248,7 @@ class CustomAuthenticationForm(forms.Form):
             'autocomplete': 'current-password'
         })
     )
-    captcha = ReCaptchaField(
-        widget=ReCaptchaV3,
-        label=''
-    )
+    # captcha = ReCaptchaField(
+    #     widget=ReCaptchaV3,
+    #     label=''
+    # )

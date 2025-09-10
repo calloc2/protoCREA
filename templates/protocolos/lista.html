@@ -272,7 +272,7 @@ document.getElementById('deleteModal').addEventListener('show.bs.modal', functio
     
     const modal = this;
     modal.querySelector('#protocolo-numero').textContent = protocoloNumero;
-    modal.querySelector('#delete-form').action = `/protocolos/${protocoloId}/deletar/`;
+    modal.querySelector('#delete-form').action = `/protocolos/protocolo/${protocoloId}/deletar/`;
 });
 </script>
 {% endblock %}

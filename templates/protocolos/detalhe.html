@@ -106,6 +106,41 @@
             </div>
         </div>
         
+        <!-- Documentos do Protocolo -->
+        {% if protocolo.documentos.exists %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-earmark-text"></i> Documentos do Protocolo
+                    <span class="badge bg-primary ms-2">{{ protocolo.documentos.count }}</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for documento in protocolo.documentos.all %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">
+                                <i class="bi bi-file-text text-primary"></i>
+                                {{ documento.tipo_documento.nome }}
+                            </h6>
+                            <small class="text-muted">
+                                {{ documento.criado_em|date:"d/m/Y H:i" }}
+                            </small>
+                        </div>
+                        {% if documento.observacoes %}
+                        <p class="mb-1 mt-2">{{ documento.observacoes }}</p>
+                        {% endif %}
+                        <small class="text-muted">
+                            <i class="bi bi-tag"></i> {{ documento.tipo_documento.get_categoria_display }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
         <!-- Histórico -->
         <div class="card">
             <div class="card-header">
@@ -216,7 +251,7 @@ document.getElementById('deleteModal').addEventListener('show.bs.modal', functio
     
     const modal = this;
     modal.querySelector('#protocolo-numero').textContent = protocoloNumero;
-    modal.querySelector('#delete-form').action = `/protocolos/${protocoloId}/deletar/`;
+    modal.querySelector('#delete-form').action = `/protocolos/protocolo/${protocoloId}/deletar/`;
 });
 </script>
 {% endblock %}

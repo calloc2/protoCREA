@@ -9,4 +9,5 @@ urlpatterns = [
     path("protocolo/criar/", views.protocolo_create, name="criar"),
     path("protocolo/<int:pk>/editar/", views.protocolo_edit, name="editar"),
     path("protocolo/<int:pk>/deletar/", views.protocolo_delete, name="deletar"),
+    path("tipos-documento/", views.tipos_documento_api, name="tipos_documento_api"),
 ]
