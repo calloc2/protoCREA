@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Protocolo, LocalArmazenamento, TipoDocumento, Documento
 from .forms import ProtocoloForm
+from .sitac_service import SITACService
 
 def protocolo_list(request):
     """Lista todos os protocolos com filtros e paginação"""
@@ -149,10 +150,22 @@ def protocolo_create(request):
                     except TipoDocumento.DoesNotExist:
                         pass
             
-            if documentos_criados > 0:
-                messages.success(request, f'Protocolo criado com sucesso! {documentos_criados} documento(s) adicionado(s).')
+            # Enviar ao SITAC após salvar documentos (somente finalísticos)
+            if protocolo.tipo in ('finalistico_pf', 'finalistico_pj'):
+                sitac_service = SITACService()
+                protocolo_data = sitac_service.create_protocolo_data(protocolo)
+                success, sitac_response = sitac_service.submit_protocolo(protocolo_data)
+                
+                if success and sitac_response:
+                    if 'protocolo' in sitac_response:
+                        protocolo.protocolo_sitac = sitac_response['protocolo']
+                        protocolo.save()
+                    messages.success(request, f'Protocolo criado e enviado para SITAC com sucesso! {documentos_criados} documento(s) adicionado(s).')
+                else:
+                    messages.warning(request, f'Protocolo criado com sucesso, mas falha ao enviar para SITAC. {documentos_criados} documento(s) adicionado(s).')
             else:
-                messages.success(request, 'Protocolo criado com sucesso!')
+                messages.success(request, f'Protocolo administrativo criado com sucesso. {documentos_criados} documento(s) adicionado(s).')
+            
             return redirect('protocolos:detalhe', pk=protocolo.pk)
     else:
         form = ProtocoloForm(user=request.user)

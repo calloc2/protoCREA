@@ -1,6 +1,42 @@
 from django import forms
 from .models import Protocolo, TipoDocumento, Documento
+from django.conf import settings
 import re
+
+
+def _validate_cpf(cpf: str) -> bool:
+    # Remove non-digits
+    cpf = re.sub(r"\D", "", cpf or "")
+    if len(cpf) != 11:
+        return False
+    if cpf == cpf[0] * 11:
+        return False
+    # First digit
+    sum1 = sum(int(cpf[i]) * (10 - i) for i in range(9))
+    d1 = (sum1 * 10) % 11
+    d1 = 0 if d1 == 10 else d1
+    # Second digit
+    sum2 = sum(int(cpf[i]) * (11 - i) for i in range(10))
+    d2 = (sum2 * 10) % 11
+    d2 = 0 if d2 == 10 else d2
+    return int(cpf[9]) == d1 and int(cpf[10]) == d2
+
+
+def _validate_cnpj(cnpj: str) -> bool:
+    cnpj = re.sub(r"\D", "", cnpj or "")
+    if len(cnpj) != 14:
+        return False
+    if cnpj == cnpj[0] * 14:
+        return False
+    weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    sum1 = sum(int(cnpj[i]) * weights1[i] for i in range(12))
+    d1 = 11 - (sum1 % 11)
+    d1 = 0 if d1 >= 10 else d1
+    weights2 = [6] + weights1
+    sum2 = sum(int(cnpj[i]) * weights2[i] for i in range(13))
+    d2 = 11 - (sum2 % 11)
+    d2 = 0 if d2 >= 10 else d2
+    return int(cnpj[12]) == d1 and int(cnpj[13]) == d2
 
 class ProtocoloForm(forms.ModelForm):
     class Meta:
@@ -90,15 +126,17 @@ class ProtocoloForm(forms.ModelForm):
         if cpf_cnpj:
             cpf_cnpj_limpo = re.sub(r'[^\d]', '', cpf_cnpj)
             
-            # Validação específica por tipo
-            if tipo == 'finalistico_pf' and len(cpf_cnpj_limpo) != 11:
-                raise forms.ValidationError(
-                    'CPF deve ter 11 dígitos para processos finalísticos de pessoa física'
-                )
-            elif tipo == 'finalistico_pj' and len(cpf_cnpj_limpo) != 14:
-                raise forms.ValidationError(
-                    'CNPJ deve ter 14 dígitos para processos finalísticos de pessoa jurídica'
-                )
+            # Validação específica por tipo com dígitos verificadores
+            if tipo == 'finalistico_pf':
+                if len(cpf_cnpj_limpo) != 11:
+                    raise forms.ValidationError('CPF deve ter 11 dígitos.')
+                if settings.STRICT_CPF_CNPJ and not _validate_cpf(cpf_cnpj_limpo):
+                    raise forms.ValidationError('CPF inválido.')
+            elif tipo == 'finalistico_pj':
+                if len(cpf_cnpj_limpo) != 14:
+                    raise forms.ValidationError('CNPJ deve ter 14 dígitos.')
+                if settings.STRICT_CPF_CNPJ and not _validate_cnpj(cpf_cnpj_limpo):
+                    raise forms.ValidationError('CNPJ inválido.')
             
             return cpf_cnpj_limpo
         return cpf_cnpj

@@ -163,3 +163,11 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "https://www.google.com", "https://www.gstatic.com")
 CSP_FRAME_SRC = ("'self'", "https://www.google.com")
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://www.google.com")
+
+# SITAC Integration Settings
+SITAC_BASE_URL = os.getenv('SITAC_BASE_URL', 'https://crea-to.sitac.com.br/app/webservices')
+SITAC_USERNAME = os.getenv('SITAC_USERNAME', '')
+SITAC_PASSWORD = os.getenv('SITAC_PASSWORD', '')
+
+# Validation behavior
+STRICT_CPF_CNPJ = os.getenv('STRICT_CPF_CNPJ', '1') == '1'
